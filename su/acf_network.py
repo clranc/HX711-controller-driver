@@ -4,7 +4,7 @@ def connectToParent():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     #temporary network for testing connections
-    wlan.connect('klato','woof1984bear')
+    wlan.connect('TestKitters','FeedUrKatz')
     while wlan.status() != network.STAT_GOT_IP:
         pass
 

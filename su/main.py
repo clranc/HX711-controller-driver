@@ -1,18 +1,17 @@
 import picoweb
 import acf_network as w
 import coroutines as c
+import tinyDB
+import routes
 
 wlan = w.connectToParent()
 
-funcs = [c.testRoutine, c.testRoutine2]
+db = tiny.TinyDB()
 
-app = picoweb.WebApp(__name__)
+r = routes.Route(db)
 
+cr = c.Coroutines(db)
 
-@app.route("/")
-def index(req, resp):
-    yield from picoweb.start_response(resp)
-    yield from resp.awrite("Yo bro, got your message")
-
+app = picoweb.WebApp(__name__,r.ROUTES)
 
 app.run(debug=True, host=wlan.ifconfig()[0], func_list=funcs)
