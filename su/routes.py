@@ -1,6 +1,8 @@
 import picoweb as pw
 import ujson as uj
 
+json_content = b'application/json'
+
 class Route:
     def __init__(self,db):
         self.ROUTES = [
@@ -9,7 +11,7 @@ class Route:
         self.db = db
 
     def configs(req, resp):
-        yield from picoweb.start_response(resp)
+        yield from picoweb.start_response(resp, content_type=json_content)
 
         if req.method == "GET":
             config = self.db.getConfigs()
