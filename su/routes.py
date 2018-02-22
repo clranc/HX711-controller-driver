@@ -6,21 +6,16 @@ json_content = b'application/json'
 class Route:
     def __init__(self,db):
         self.ROUTES = [
-                 ("/config",self.configs),
+                 ("/checkin",self.checkin),
              ]
         self.db = db
 
-    def configs(req, resp):
-        yield from picoweb.start_response(resp, content_type=json_content)
-
+    def checkin(req, resp):
         if req.method == "GET":
+            yield from picoweb.start_response(resp, content_type=json_content)
             config = self.db.getConfigs()
-            yield from resp.awrite(uj.dumps(config))
+            yield from resp.awrite("{'test':'response'}")
 
-        elif req.method == "POST":
-            id = req.reader().read()
-            id = uj.loads(id)
-            self.db.setID(id[b"id"])
-        yield from resp.awrite(
-
-
+        else:
+            yield from picoweb.start_response(resp, content_type=json_content,status="501")
+            yield from resp.awrite("{'test':'failure'}")

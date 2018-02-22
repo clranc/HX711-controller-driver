@@ -1,13 +1,13 @@
 import urequests as r
-import machine
+import esp
 import network
 
-newkey_key = "CanIHasCheezburger"
+newkey_key = "CanIHasCheezeburger"
 
 class acf_network:
     def __init__(self,DEBUG=False):
         self.wlan = network.WLAN(network.STA_IF)
-        self.wlan.active(true())
+        self.wlan.active(True)
         self.connect()
         self.DEBUG = DEBUG
         self.connected = False
@@ -24,25 +24,18 @@ class acf_network:
         elif self.wlan.status() != network.STAT_GOT_IP:
             self.connected = False
             if self.DEBUG == True:
-                print("connection status : %d", self.wlan.status())
+                print("connection status: %d", self.wlan.status())
         return self.connected
 
     # Checks to see if the stored key is valid with the pi server
     def verifyKey(self, key):
-        resp = r.get('http://'+self.wlan.ifconfig()[2]+":8080",json = {'key':key})
+        resp = r.get('http://'+self.wlan.ifconfig()[2]+":5000/sfeeder/config",json = {'key':key}, headers={'Content-Type':'application/json'})
         b = resp.json()['bool']
-        if b == 'T':
-            return True
-        else:
-            return False
+        return b
 
-    def getKey(self):
-        resp = r.post('http://'+self.wlan.ifconfig()[2]+":8080", json = {'id':machine.unique_id(), 'key': newkey_key})
+    def getNewKey(self):
+        resp = r.post('http://'+self.wlan.ifconfig()[2]+":5000/sfeeder/config", json = {'id':esp.flash_id(), 'key': newkey_key}, headers={'Content-Type':'application/json'})
         b = resp.json()['bool']
         key = resp.json()['key']
-        if b == 'T':
-            b = True
-        else :
-            b = False
         return (b, key)
 

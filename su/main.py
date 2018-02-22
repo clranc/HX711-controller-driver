@@ -4,14 +4,17 @@ import coroutines as c
 import tinyDB
 import routes
 
-wlan = w.connectToParent()
-
-db = tiny.TinyDB()
+db = tinyDB.TinyDB()
 
 r = routes.Route(db)
 
 cr = c.Coroutines(db)
 
+while cr.net.isConnected() == False:
+    pass
+
+funcs = [cr.networkRoutine]
+
 app = picoweb.WebApp(__name__,r.ROUTES)
 
-app.run(debug=True, host=wlan.ifconfig()[0], func_list=funcs)
+app.run(debug=True, host=cr.net.wlan.ifconfig()[0], func_list=funcs)

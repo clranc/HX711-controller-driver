@@ -1,6 +1,5 @@
 import btree
 
-newkey_key = "CanIHasCheezBurger"
 
 class TinyDB:
     def __init__(self):
@@ -10,8 +9,7 @@ class TinyDB:
         except OSError:
             self.file = open("tiny.db", "w+b")
             self.db = btree.open(self.file)
-            self.db[b"key"] = newkey_key
-            self.db
+            self.db[b"key"] = ""
 
     def getKey(self):
         return self.db[b"key"]
