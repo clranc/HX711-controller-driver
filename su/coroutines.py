@@ -1,6 +1,7 @@
 import uasyncio as asyncio
 import acf_network as a
 #import rfid as r
+import load_sensor as ls
 
 import network
 
@@ -11,6 +12,7 @@ class Coroutines:
         self.net = a.acf_network(DEBUG=True)
         #self.rfid = r.RFID()
         self.key_verified = False
+        self.lsensor = ls.LoadSensor()
 
     async def networkRoutine(self):
         while True:
