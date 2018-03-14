@@ -9,10 +9,11 @@ rg.setup(sck, rg.OUT)
 
 scale = 743.0
 
+
+
 # Get 24 bit weight value
 def getValue():
-    # Initalize sck pulse count and base reading
-    sck_cnt = 24
+    # Initalize base reading value
     reading = 0x0
 
     # Check for available valuemicropython wait
@@ -20,10 +21,10 @@ def getValue():
         pass
 
     # Shift in the 24 bit value
-    while sck_cnt > 0:
+    for i in range(24):
         rg.output(sck,1)
         rg.output(sck,0)
-        reading = (reading << 1)
+        reading = (reading << 1) | dt.value()
         if (rg.input(dt) == 1):
             reading += 1
         sck_cnt -= 1
@@ -44,6 +45,6 @@ def getAvgValue(avg_cnt = 10):
 
     return sum / avg_cnt
 
-def getGram(avg_cnt = 10, offset=0):
+def getGram(avg_cnt = 10, offset = 0):
     weight = getAvgValue(avg_cnt) - offset
     return weight / scale
