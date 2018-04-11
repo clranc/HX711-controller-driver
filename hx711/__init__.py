@@ -109,7 +109,7 @@ class LoadSensor:
     def gramToLoadVal(self, weight):
         return int(weight*scale)
 
-    def getGram_cur():
+    def getGram_cur(self):
         avg = self.__load_avg__()
         if avg != None:
             avg = avg/scale
@@ -134,7 +134,7 @@ class LoadSensor:
         return self.bufload
 
     def isLoadFull(self, feed):
-        self.isLoadValid(fullCheck(feed))
+        return self.isLoadValid(fullCheck(feed))
 
     def calibrate(self,avg_cnt=5):
         self.__offset = int(self.getAvgValue(avg_cnt))
