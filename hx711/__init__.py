@@ -1,8 +1,15 @@
 import os
 if os.__name__ == 'uos':
-    from hx711_esp_pin import DTPin, SCKPin
+    from hx711_esp_pin import DTPin, SCKPin, hx711_init
+    DTP=4
+    SCKP=5
 else :
-    from hx711_pi_pin import DTPin, SCKPin
+    from hx711_pi_pin import DTPin, SCKPin, hx711_init
+    DTP=16
+    DTP=20
+
+INITMODE=True
+
 from array import array
 
 # Gram Conversion Value
@@ -24,9 +31,10 @@ absdt = lambda x1,x2,t: abs(x1 - x2) < t
 abst = lambda x,t: abs(x) < t
 
 class LoadSensor:
-    def __init__(self):
-        self.dt = DTPin()
-        self.sck = SCKPin()
+    def __init__(self,dtp=DTP,sckp=SCKP,initmode=INITMODE):
+        hx711_init(initmode)
+        self.dt = DTPin(dtp)
+        self.sck = SCKPin(sckp)
         self.buf = array('q',[0]*buffer_size)
         self.bufi = 0
         self.bufload = True
