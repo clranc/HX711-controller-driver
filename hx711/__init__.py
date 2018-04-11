@@ -1,10 +1,10 @@
 import os
 if os.__name__ == 'uos':
-    from hx711_esp_pin import DTPin, SCKPin, hx711_init
+    from .hx711_esp_pin import DTPin, SCKPin, hx711_init
     DTP=4
     SCKP=5
 else :
-    from hx711_pi_pin import DTPin, SCKPin, hx711_init
+    from .hx711_pi_pin import DTPin, SCKPin, hx711_init
     DTP=35
     SCKP=37
 
@@ -21,8 +21,8 @@ readtolerance = 100
 
 # caliCheck :: int -> bool
 caliCheck = lambda x: abst(x,readtolerance)
-# loadCheck :: int -> (int -> bool)
-loadCheck = lambda t: lambda x: gte(x,t*scale)
+# fullCheck :: int -> (int -> bool)
+fullCheck = lambda t: lambda x: gte(x,t*scale)
 # ltt :: int -> int -> bool
 gte = lambda x,t: x >= t
 # absdt :: int -> int -> int -> bool
@@ -109,6 +109,12 @@ class LoadSensor:
     def gramToLoadVal(self, weight):
         return int(weight*scale)
 
+    def getGram_cur():
+        avg = self.__load_avg__()
+        if avg != None:
+            avg = avg/scale
+        return avg
+
     def getGram(self):
         self.__buf_load__()
         while 1:
@@ -126,6 +132,9 @@ class LoadSensor:
             self.__buf_add__()
         self.bufload = self.__buf_check__(lf)
         return self.bufload
+
+    def isLoadFull(self, feed):
+        self.isLoadValid(fullCheck(feed))
 
     def calibrate(self,avg_cnt=5):
         self.__offset = int(self.getAvgValue(avg_cnt))
