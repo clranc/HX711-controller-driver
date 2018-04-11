@@ -5,8 +5,8 @@ if os.__name__ == 'uos':
     SCKP=5
 else :
     from hx711_pi_pin import DTPin, SCKPin, hx711_init
-    DTP=16
-    DTP=20
+    DTP=35
+    SCKP=37
 
 INITMODE=True
 
