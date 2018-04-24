@@ -1,12 +1,12 @@
 import os
 if os.__name__ == 'uos':
-    from hx711_esp_pin import DTPin, SCKPin, hx711_init
+    from .hx711_esp_pin import DTPin, SCKPin, hx711_init
     DTP=4
     SCKP=5
 else :
-    from hx711_pi_pin import DTPin, SCKPin, hx711_init
-    DTP=16
-    DTP=20
+    from .hx711_pi_pin import DTPin, SCKPin, hx711_init
+    DTP=35
+    SCKP=37
 
 INITMODE=True
 
@@ -19,14 +19,16 @@ buffer_size = 10
 valid_buf_cnt = 7
 readtolerance = 100
 
+# Jam Checking Values
+jam_check_cnt = 5
 FULL = 0
 FEEDING = 1
 JAMMED = 2
 
 # caliCheck :: int -> bool
 caliCheck = lambda x: abst(x,readtolerance)
-# loadCheck :: int -> (int -> bool)
-loadCheck = lambda t: lambda x: gte(x,t*scale)
+# fullCheck :: int -> (int -> bool)
+fullCheck = lambda t: lambda x: gte(x,t*scale)
 # ltt :: int -> int -> bool
 gte = lambda x,t: x >= t
 # absdt :: int -> int -> int -> bool
@@ -42,6 +44,7 @@ class LoadSensor:
         self.buf = array('q',[0]*buffer_size)
         self.bufi = 0
         self.bufload = True
+        self.jamcnt = 0
 
         # Make sure sck is off
         self.sck.off()
@@ -122,6 +125,12 @@ class LoadSensor:
     def gramToLoadVal(self, weight):
         return int(weight*scale)
 
+    def getGram_cur(self):
+        avg = self.__load_avg__()
+        if avg != None:
+            avg = avg/scale
+        return avg
+
     def getGram(self):
         self.__buf_load__()
         while 1:
@@ -140,9 +149,15 @@ class LoadSensor:
         self.bufload = self.__buf_check__(lf)
         return self.bufload
 
-    def loadState(self, lf):
-        valid = self.isLoadValid(lf)
-        jam = self.__is_jammed__()
+    def loadState(self, feed):
+        valid = self.isLoadValid(fullCheck(feed))
+        if self.jamcnt == jam_check_cnt:
+            self.jamcnt = 0
+            jam = self.__is_jammed__()
+        else:
+            self.jamcnt += 1
+            jam = False
+
         if (valid):
             return FULL
         elif(jam):
